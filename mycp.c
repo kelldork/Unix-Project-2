@@ -41,10 +41,19 @@ int main(int argc, char **argv)
 	if (Rflag)
 	{
 		fprintf(stdout, "\nCopy directory %s to %s\n\n", argv[2], argv[3]);
+
+		// check if source file exists
+		if ( access(argv[2], F_OK) == -1 )
+		{
+			fprintf(stderr, "Source file does not exist\n\n");
+			return 1;
+		}
 	}
 	else
 	{
 		fprintf(stdout, "\nCopy flag %s to %s\n\n", argv[1], argv[2]);
+
+		// check if source file exists
 		if ( access(argv[1], F_OK) == -1 )
 		{
 			fprintf(stderr, "Source file does not exist\n\n");
