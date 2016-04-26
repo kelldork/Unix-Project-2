@@ -1,0 +1,4 @@
+# Ignore everything in this directory, which will contain binaries
+*
+# Except this file
+!.gitignore
