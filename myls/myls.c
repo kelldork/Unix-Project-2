@@ -33,12 +33,12 @@ static void printLong(struct dirent* dp)
     printf( (buf.st_mode & S_IWOTH) ? "w" : "-");
     printf( (buf.st_mode & S_IXOTH) ? "x" : "-");
 
-	printf("%3d", buf.st_nlink);
+	printf("%3d",(int) buf.st_nlink);
 	struct passwd pwd = *getpwuid(buf.st_uid);
 	printf(" %10s", pwd.pw_name);
 	struct group grp = *getgrgid(buf.st_gid);
 	printf("%10s", grp.gr_name);
-	printf("  %6lld", buf.st_size);
+	printf("  %6lld", (long long)(int)buf.st_size);
 	struct tm *time = localtime(&buf.st_atime); 
 	strftime(buffer, 80, "%b %d %I:%M", time);
 	printf("  %s", buffer);
