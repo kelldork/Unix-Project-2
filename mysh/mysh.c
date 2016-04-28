@@ -87,6 +87,7 @@ void executeProgram(char **args)
    pid_t pid=fork();
    if(pid == 0)
    {
+<<<<<<< HEAD
       char command[256];
 	  /***********************************************/
 	  /*  THIS LINE NEEDS TO BE ALTERED AS NEEDED    */
@@ -96,14 +97,21 @@ void executeProgram(char **args)
 	  //strcat(command, "/home/Students/klk2/Unix/Unix-Project-2/");
 	  strcat(command, args[0]);
       int res = execv(command, args);
+=======
+      //char command[256];
+	  /**************************************************/
+	  /* THIS LINE NEEDS TO BE ALTERED FOR EACH MACHINE */
+	  /**************************************************/
+	  //strcat(command, "/home/Students/scm84/Unix/Unix-Project-2/");
+	  //strcat(command, args[0]);
+      int res = execv(args[0], args);
+>>>>>>> 0edca2ee899719246a4f7cb2b65bd69369fa651d
       fprintf(stderr, "execv result %i failed with errno %d\n", res, errno);
       //errno 2 is no such file or directory 
-	  /*
       if(errno == 2)
       {
          fprintf(stderr, "Make sure %s is in the same directory as mysh\n", args[0]);
       }
-	  */
       exit(127);
    }
    else if(pid > 0)
