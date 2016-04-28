@@ -102,11 +102,14 @@ int main(int argc, char **argv)
 		
 	}
 	
-	while ((c = getopt (argc, argv, "R")) != -1)
+	while ((c = getopt (argc, argv, "Rr")) != -1)
 	{
 		switch(c)
 		{
 			case 'R':
+				Rflag = 1;
+				break;
+			case 'r':
 				Rflag = 1;
 				break;
 			default:
