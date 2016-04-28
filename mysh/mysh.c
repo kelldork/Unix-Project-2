@@ -87,9 +87,7 @@ void executeProgram(char **args)
    pid_t pid=fork();
    if(pid == 0)
    {
-      char command[256];
-      strcat(command, args[0]);
-      int res = execv(command, args);
+      int res = execv(args[0], args);
       fprintf(stderr, "execv result %i failed with errno %d\n", res, errno);
       //errno 2 is no such file or directory 
       if(errno == 2)
