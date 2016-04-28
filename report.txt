@@ -1,0 +1,64 @@
+
+
+Section I
+Azaan - myls Command, Section III myls portion of the report.
+Kasie - mysh shell, mycd and pwd command. Section II and IV of the report.
+Lais - Makefiles, mycat command, part of mysh. Section I, II and mycat portion of Section III.
+Sean - mycp command. Section III mycp portion of the report.
+
+Section II (Task I)
+1) Make file for the shell (Note the -g option for debugging is not in the final
+Makefile but would have been used during development)
+#BEGIN MAKEFILE FOR SHELL
+TRGTS = MYCAT MYCP MYLS MYSH
+
+all: $(TRGTS)
+
+MYCAT:
+	cd ./mycat; make ; cp mycat ../bin/.
+
+MYCP:
+	cd ./mycp; make ; cp mycp ../bin/.
+
+MYLS:
+	cd ./myls; make ; cp myls ../bin/.
+MYSH:
+	cd ./mysh; make ; cp mysh ../bin/.
+
+clean:
+	rm -f *.o *~
+	cd ./mycat; make clean
+	cd ./mycp; make clean
+	cd ./myls; make clean
+	cd ./mysh; make clean
+	cd ./bin;  rm mycat; rm mycp; rm myls; rm mysh
+#END MAKEFILE FOR SHELL
+
+#BEGIN MAKEFILE FOR MYCAT 
+default: mycat
+
+mycat.o: mycat.c
+	gcc -c mycat.c -o mycat.o
+
+mycat: mycat.o
+	gcc mycat.o -o mycat
+
+clean:
+	-rm -f mycat.o
+	-rm -f mycat
+#END MAKEFILE FOR MYCAT 
+
+Section III (Task II)
+
+1)
+  mycat: The implementation of mycat will read in a variable number of arguments.  Each of those arguments is expected to be a file.  They can be binary files or text files. A directory, a file a user doesn't have permissions to read, or a non-existant file will give the appropriate error message determined by the error the fopen function received when attempting to open the file.   The files passed in are iterated over sequentially based on the order of the arguments to mycat.  One character is read in, and then printed to stdout unless it is he EOF marker. If the EOF is reached, the file is closed and the next file on the list is processed in a similar manner.  If there is an error reading any of the files being itereated over, an error message is printed to stderr and processing for that file is skipped.  This algorithm will concatenate the valid files to stdout, which can then easily be redirected to a new file if desired.  If mycat receives no arguments, it then checks to see if stdin is sending it any information from the terminal.  If it is, it treats stdin as a file to concatenate until it reaches EOF.  If it is not, it prints out an error message explaining how to call mycat.
+
+2) Two issues that must be paid attention to when implementing mycat:
+   a) Making sure that the correct error messages are displayed when there are problems opening the files passed in as arguments.  This is done by using the warn() function.
+   b) Making sure that stdin could be handled correctly required special code to detect if stdin came from a terminal.  The function used was isatty which takes in a file descriptor as an argument and will return true(1) if it is associated with a terminal.  In this case the file descriptor was simply stdin.
+
+3) Example error messages
+   mycat:
+      lais@lais-ubuntu:~/git/Unix-Project-2/bin$ ./mycat no_such_file
+      mycat: no_such_file: No such file or directory
+
