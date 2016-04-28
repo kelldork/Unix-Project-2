@@ -54,28 +54,21 @@ int main(int argc, char ** argv) {
         //mycat
         else if(!strcmp(args[0], "mycat")) {
           executeProgram(args);
-          //if(!args[1]) printf("mycat: %s: No such file or directory\n", args[1]);
-          //else mycat(args[1]);
         }
 
         //mycd
-        else if(!strcmp(args[0], "mycd")) {
-          if(!strcmp(args[1], ".")) {
-            chdir(".");
-          }
-          else if(!strcmp(args[1], "..")) {
-            chdir("..");
-          }
-          else {
-            if(chdir(args[1]) != 0) {
-              printf("-bash: mycd: %s: No such file or directory\n", args[1]);
-            }
+        else if(!strcmp(args[0], "mycd")) { 
+          if(args[1]) {
+            if(!strcmp(args[1], ".")) chdir(".");
+            else if(!strcmp(args[1], "..")) chdir("..");
             else {
-              chdir(args[1]);
-            }
+              if(chdir(args[1]) != 0) printf("-bash: mycd: %s: No such file or directory\n", args[1]);
+              else chdir(args[1]);
+            }   
           }
+          else chdir(getenv("HOME"));
         }
-
+	
         //pwd
         else if(!strcmp(args[0], "pwd")) printf("%s\n", prompt);
 
@@ -89,7 +82,6 @@ int main(int argc, char ** argv) {
   }
   return 0;
 } 
-
 
 void executeProgram(char **args)
 {
