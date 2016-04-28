@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <pwd.h>
 #include <grp.h>
+#include <libgen.h>
+
 
 bool l_flag = false, a_flag = false, isDirectory = false, isFile = false;
 
@@ -102,6 +104,7 @@ int main(int argc, char** argv)
 		}
 		else if( access( argv[count], F_OK ) != -1 )
 		{	
+			arg_num = count;
 				//printf("./myls: : Permission denied\n");
 			isFile = true;
 		}
@@ -130,7 +133,33 @@ int main(int argc, char** argv)
 		}
 	}
 	else if(isFile)
-	{
-	
+	{	
+		bool found = false;
+		struct dirent *dp;
+		DIR *dir = opendir(".");
+		while((dp = readdir(dir)) != NULL)
+		{
+			if(strcmp(dp->d_name, argv[arg_num]) == 0)
+			{
+				output(dp);
+				found = true;
+			}
+		}
+		
+		if(!found)
+		{
+			char* ts1 = strdup(argv[arg_num]);
+			char* dir2 = dirname(ts1);
+			char* filename = basename(ts1);
+			dir = opendir(dir2);
+			while((dp = readdir(dir)) != NULL)
+			{
+				if(strcmp(dp->d_name, filename) == 0)
+				{
+					output(dp);
+				}
+			}
+			
+		}
 	}
 }
