@@ -91,7 +91,7 @@ void executeProgram(char **args)
 	  /***********************************************/
 	  /*  THIS LINE NEEDS TO BE ALTERED AS NEEDED    */
 	  /***********************************************/
-	  strcat(command, "/home/Students/scm84/Unix/Unix-Project-2/");
+	  strcat(command, "/home/Students/klk2/unix/proj2_final/Unix-Project-2/");
 	  //strcat(command, "/home/Students/amd166/Unix/Unix-Project-2/");
 	  //strcat(command, "/home/Students/klk2/Unix/Unix-Project-2/");
 	  strcat(command, args[0]);
