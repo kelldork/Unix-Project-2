@@ -105,10 +105,23 @@ int main(int argc, char** argv)
 		else if( access( argv[count], F_OK ) != -1 )
 		{	
 			arg_num = count;
-				//printf("./myls: : Permission denied\n");
 			isFile = true;
 		}
 		count++;
+	}
+
+	int fileDes = open(argv[arg_num], O_RDWR );
+	struct stat st;
+    int result = stat(argv[arg_num], &st);
+	if(fileDes == -1)
+	{
+		printf("No permission\n");
+		exit(-1);
+	}
+	else if(!result)
+	{
+		printf("./myls: f: No such file or directory\n");
+		exit(-1);
 	}
 	
 	if(isDirectory == 0 && isFile == 0)
@@ -134,6 +147,8 @@ int main(int argc, char** argv)
 	}
 	else if(isFile)
 	{	
+		
+
 		bool found = false;
 		struct dirent *dp;
 		DIR *dir = opendir(".");
