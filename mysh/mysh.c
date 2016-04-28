@@ -68,8 +68,8 @@ int main(int argc, char ** argv) {
           else chdir(getenv("HOME"));
         }
 	
-        //pwd
-        else if(!strcmp(args[0], "pwd")) printf("%s\n", prompt);
+        //mypwd
+        else if(!strcmp(args[0], "mypwd")) printf("%s\n", prompt);
 
         //exit
         else if(!strcmp(args[0], "exit")) break;
