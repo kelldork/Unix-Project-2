@@ -110,6 +110,8 @@ int main(int argc, char** argv)
 		count++;
 	}
 
+	if(argc > 2)
+	{
 	int fileDes = open(argv[arg_num], O_RDWR );
 	struct stat st;
     int result = stat(argv[arg_num], &st);
@@ -122,6 +124,7 @@ int main(int argc, char** argv)
 	{
 		printf("./myls: f: No such file or directory\n");
 		exit(-1);
+	}
 	}
 	
 	if(isDirectory == 0 && isFile == 0)
