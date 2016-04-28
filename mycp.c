@@ -52,13 +52,13 @@ int cpdir(DIR *d, char *copyPath, char *pastePath)
 			int fin = open(copyPathTemp, O_RDONLY);
 			if(fin < 0)
 			{
-				fprintf(stderr, "error\n\n");
+				fprintf(stderr, "error1\n\n");
 				return 1;
 			}
 			int fout = open(pastePathTemp, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 			if(fin < 0)
 			{
-				fprintf(stderr, "error\n\n");
+				fprintf(stderr, "error2\n\n");
 				return 1;
 			}
 			char line[8192];
@@ -72,11 +72,11 @@ int cpdir(DIR *d, char *copyPath, char *pastePath)
 				}
 				if(result <= 0);
 				{
-					fprintf(stderr, "error");
+					fprintf(stderr, "error3\n\n");
 				}
 				if(write(fout, &line[0], result) != result)
 				{
-					fprintf(stderr, "error");
+					fprintf(stderr, "error4\n\n");
 				}
 			}
 
