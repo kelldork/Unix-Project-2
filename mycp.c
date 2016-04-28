@@ -7,9 +7,11 @@
 #include<string.h>
 #include<dirent.h>
 
-int cpdir(DIR *d, char *copyPath, char *pastePath)
+int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 {
+		DIR *d;
 		struct dirent *buf;
+		d = opendir(copyPath);
 		char copyPathTemp[512];
 		char pastePathTemp[512];
 		int flag = 0;
@@ -30,60 +32,114 @@ int cpdir(DIR *d, char *copyPath, char *pastePath)
 			if(buf->d_type == DT_DIR)
 			{
 				fprintf(stdout, "%s directory.\n\n", buf->d_name);
-				strcat (copyPath, buf->d_name);
-				strcat (pastePath, buf->d_name);
-				mkdir  (pastePath, S_IRWXG | S_IRWXO | S_IRWXU);
-				DIR *temp = opendir(copyPath);
-				strcat (copyPath, "/");
-				strcat (pastePath, "/");
-				cpdir  (temp, copyPath, pastePath);
+				// set path temps to next dir
+				/*
+				strcpy(copyPathTemp, copyPath);
+				strcpy(pastePathTemp, pastePath);
+				*/
+				strcat (copyPathTemp, buf->d_name);
+				strcat (pastePathTemp, buf->d_name);
+				mkdir  (pastePathTemp, S_IRWXG | S_IRWXO | S_IRWXU);
+				//DIR *temp = opendir(copyPath);
+				strcat (copyPathTemp, "/");
+				strcat (pastePathTemp, "/");
+				cpdir  (/*temp,*/ copyPathTemp, pastePathTemp);
+				/*
 				strcpy (copyPath, copyPathTemp);
 				strcpy (pastePath, pastePathTemp);
-				flag = 1;
+				*/
+				//flag = 1;
 			}
 
+			else
+			{
+				strcat(copyPathTemp, buf->d_name);
+				strcat(pastePathTemp, buf->d_name);
+				/*
+				strcat(copyPathTemp, "/");
+				strcat(pastePathTemp, "/");
+				*/
+				fprintf(stdout, "\nCopy file %s to %s\n\n", copyPathTemp, pastePathTemp);
+
+				// open copy file with read permission
+				if (copy = fopen(copyPathTemp, "r"))
+				{
+					// open paste file
+					if(paste = fopen(pastePathTemp, "w+"))
+					{
+						// copy file over
+						fprintf(stdout, "Successfully opened destination file for writing.\n\n");
+						char line[8192];
+						while(fgets(line, sizeof(line), copy) != 0)
+						{
+							fputs(line, paste);
+						}
+
+						fclose(copy);
+						fclose(paste);
+					}
+					else
+					{
+						fprintf(stderr, "error: could not open destination file");
+						fclose(copy);
+					}
+				}
+				// no read permission
+				else
+				{
+					fprintf(stderr, "warning: no read permission on %s\n\n", copyPathTemp);
+				}
+			}
+
+			/*
 			if(flag)
 			{
 				continue;
 			}
+			*/
 
-			strcat(copyPathTemp, buf->d_name);
-			strcat(pastePathTemp, buf->d_name);
-			int fin = open(copyPathTemp, O_RDONLY);
-			if(fin < 0)
+			/*
+			else
 			{
-				fprintf(stderr, "error1\n\n");
-				return 1;
-			}
-			int fout = open(pastePathTemp, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-			if(fin < 0)
-			{
-				fprintf(stderr, "error2\n\n");
-				return 1;
-			}
-			char line[1024];
-
-			while(1)
-			{
-				ssize_t result = read(fin, &line[0], sizeof(line));
-				if(!result)
+				strcat(copyPathTemp, buf->d_name);
+				strcat(pastePathTemp, buf->d_name);
+				int fin = open(copyPathTemp, O_RDONLY);
+				if(fin < 0)
 				{
-					break;
-				}
-				if(result <= 0);
-				{
-					fprintf(stderr, "error3\n\n");
+					fprintf(stderr, "error1\n\n");
 					return 1;
 				}
-				if(write(fout, &line[0], result) != result)
+				int fout = open(pastePathTemp, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+				if(fin < 0)
 				{
-					fprintf(stderr, "error4\n\n");
+					fprintf(stderr, "error2\n\n");
 					return 1;
 				}
-			}
+				char line[1024];
 
-			fclose(copy);
-			fclose(paste);
+				while(1)
+				{
+					ssize_t result = read(fin, &line[0], sizeof(line));
+					if(!result)
+					{
+						break;
+					}
+					if(result <= 0);
+					{
+						fprintf(stderr, "error3\n\n");
+						return 1;
+					}
+					if(write(fout, &line[0], result) != result)
+					{
+						fprintf(stderr, "error4\n\n");
+						return 1;
+					}
+				}
+
+				fclose(copy);
+				fclose(paste);
+			}
+			*/
 			
 			// if not directory
 			/*
@@ -201,7 +257,7 @@ int main(int argc, char **argv)
 			// open destination dir
 			if(d2 = opendir(argv[3]))
 			{
-				int cp = cpdir(d1, copyPath, pastePath);
+				int cp = cpdir(/*d1,*/ copyPath, pastePath);
 				if(cp)
 				{
 					fprintf(stderr, "cpdir failed\n\n");
@@ -215,7 +271,7 @@ int main(int argc, char **argv)
 			{
 				mkdir(argv[3], S_IRWXG | S_IRWXO | S_IRWXU);
 				d2 = opendir(argv[3]);
-				int cp2 = cpdir(d1, copyPath, pastePath);
+				int cp2 = cpdir(/*d1,*/ copyPath, pastePath);
 				if(cp2)
 				{
 					fprintf(stderr, "cpdir failed\n\n");
