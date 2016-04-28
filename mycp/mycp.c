@@ -9,88 +9,73 @@
 
 int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 {
-		DIR *d;
-		struct dirent *buf;
-		d = opendir(copyPath);
-		char copyPathTemp[512];
-		char pastePathTemp[512];
-		int flag = 0;
-		FILE *copy;
-		FILE *paste;
-		while ((buf = readdir(d)) != NULL)
+	DIR *d;
+	struct dirent *buf;
+	d = opendir(copyPath);
+	char copyPathTemp[512];
+	char pastePathTemp[512];
+	int flag = 0;
+	FILE *copy;
+	FILE *paste;
+	while ((buf = readdir(d)) != NULL)
+	{
+		strcpy(copyPathTemp, copyPath);
+		strcpy(pastePathTemp, pastePath);
+
+		// ignore . and ..
+		if (!strcmp(buf->d_name, ".") || !strcmp(buf->d_name, ".."))
 		{
-			strcpy(copyPathTemp, copyPath);
-			strcpy(pastePathTemp, pastePath);
+			continue;
+		}
 
-			//ignore . and ..
-			if (!strcmp(buf->d_name, ".") || !strcmp(buf->d_name, ".."))
+		// if dir, recursive call
+		if(buf->d_type == DT_DIR)
+		{
+			fprintf(stdout, "%s directory.\n\n", buf->d_name);
+			strcat (copyPathTemp, buf->d_name);
+			strcat (pastePathTemp, buf->d_name);
+			mkdir  (pastePathTemp, S_IRWXG | S_IRWXO | S_IRWXU);
+			strcat (copyPathTemp, "/");
+			strcat (pastePathTemp, "/");
+			cpdir  (copyPathTemp, pastePathTemp);
+		}
+
+		else
+		{
+			strcat(copyPathTemp, buf->d_name);
+			strcat(pastePathTemp, buf->d_name);
+			fprintf(stdout, "\nCopy file %s to %s\n\n", copyPathTemp, pastePathTemp);
+
+			// open copy file with read permission
+			if (copy = fopen(copyPathTemp, "r"))
 			{
-				continue;
-			}
-
-			// if dir, recursive call
-			if(buf->d_type == DT_DIR)
-			{
-				fprintf(stdout, "%s directory.\n\n", buf->d_name);
-				// set path temps to next dir
-				/*
-				strcpy(copyPathTemp, copyPath);
-				strcpy(pastePathTemp, pastePath);
-				*/
-				strcat (copyPathTemp, buf->d_name);
-				strcat (pastePathTemp, buf->d_name);
-				mkdir  (pastePathTemp, S_IRWXG | S_IRWXO | S_IRWXU);
-				//DIR *temp = opendir(copyPath);
-				strcat (copyPathTemp, "/");
-				strcat (pastePathTemp, "/");
-				cpdir  (/*temp,*/ copyPathTemp, pastePathTemp);
-				/*
-				strcpy (copyPath, copyPathTemp);
-				strcpy (pastePath, pastePathTemp);
-				*/
-				//flag = 1;
-			}
-
-			else
-			{
-				strcat(copyPathTemp, buf->d_name);
-				strcat(pastePathTemp, buf->d_name);
-				/*
-				strcat(copyPathTemp, "/");
-				strcat(pastePathTemp, "/");
-				*/
-				fprintf(stdout, "\nCopy file %s to %s\n\n", copyPathTemp, pastePathTemp);
-
-				// open copy file with read permission
-				if (copy = fopen(copyPathTemp, "r"))
+				// open paste file
+				if(paste = fopen(pastePathTemp, "w+"))
 				{
-					// open paste file
-					if(paste = fopen(pastePathTemp, "w+"))
+					// copy file over
+					fprintf(stdout, "Successfully opened destination file for writing.\n\n");
+					char line[8192];
+					while(fgets(line, sizeof(line), copy) != 0)
 					{
-						// copy file over
-						fprintf(stdout, "Successfully opened destination file for writing.\n\n");
-						char line[8192];
-						while(fgets(line, sizeof(line), copy) != 0)
-						{
-							fputs(line, paste);
-						}
+						fputs(line, paste);
+					}
 
-						fclose(copy);
-						fclose(paste);
-					}
-					else
-					{
-						fprintf(stderr, "error: could not open destination file");
-						fclose(copy);
-					}
+					fclose(copy);
+					fclose(paste);
 				}
-				// no read permission
 				else
 				{
-					fprintf(stderr, "warning: no read permission on %s\n\n", copyPathTemp);
+					fprintf(stderr, "error: could not open destination file");
+					fclose(copy);
 				}
 			}
+			// no read permission
+			else
+			{
+				fprintf(stderr, "warning: no read permission on %s\n\n", copyPathTemp);
+			}
 		}
+	}
 }
 
 int main(int argc, char **argv)
@@ -99,7 +84,6 @@ int main(int argc, char **argv)
 	int Rflag = 0;
 	FILE *copy;
 	FILE *paste;
-	//FILE *fp;
 
 	// check args
 	if (argc < 3)
@@ -135,15 +119,6 @@ int main(int argc, char **argv)
 	{
 		fprintf(stdout, "\nCopy directory %s to %s\n\n", argv[2], argv[3]);
 
-		// check if source file exists
-		/*
-		if ( access(argv[2], F_OK) == -1 )
-		{
-			fprintf(stderr, "Source file does not exist\n\n");
-			return 1;
-		}
-		*/
-
 		char copyPath[512];
 		char pastePath[512];
 		getcwd (copyPath, 511);
@@ -155,13 +130,14 @@ int main(int argc, char **argv)
 		strcat (pastePath, "/");
 		DIR *d1;
 		DIR *d2;
+
 		// open source dir
 		if(d1 = opendir(argv[2]))
 		{
 			// open destination dir
 			if(d2 = opendir(argv[3]))
 			{
-				int cp = cpdir(/*d1,*/ copyPath, pastePath);
+				int cp = cpdir(copyPath, pastePath);
 				if(cp)
 				{
 					fprintf(stderr, "cpdir failed\n\n");
@@ -175,7 +151,7 @@ int main(int argc, char **argv)
 			{
 				mkdir(argv[3], S_IRWXG | S_IRWXO | S_IRWXU);
 				d2 = opendir(argv[3]);
-				int cp2 = cpdir(/*d1,*/ copyPath, pastePath);
+				int cp2 = cpdir(copyPath, pastePath);
 				if(cp2)
 				{
 					fprintf(stderr, "cpdir failed\n\n");
