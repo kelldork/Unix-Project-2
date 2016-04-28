@@ -31,7 +31,7 @@ int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 		// if dir, recursive call
 		if(buf->d_type == DT_DIR)
 		{
-			fprintf(stdout, "%s directory.\n\n", buf->d_name);
+			//fprintf(stdout, "%s directory.\n\n", buf->d_name);
 			strcat (copyPathTemp, buf->d_name);
 			strcat (pastePathTemp, buf->d_name);
 			mkdir  (pastePathTemp, S_IRWXG | S_IRWXO | S_IRWXU);
@@ -44,7 +44,7 @@ int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 		{
 			strcat(copyPathTemp, buf->d_name);
 			strcat(pastePathTemp, buf->d_name);
-			fprintf(stdout, "\nCopy file %s to %s\n\n", copyPathTemp, pastePathTemp);
+			//fprintf(stdout, "\nCopy file %s to %s\n\n", copyPathTemp, pastePathTemp);
 
 			// open copy file with read permission
 			if (copy = fopen(copyPathTemp, "r"))
@@ -53,7 +53,7 @@ int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 				if(paste = fopen(pastePathTemp, "w+"))
 				{
 					// copy file over
-					fprintf(stdout, "Successfully opened destination file for writing.\n\n");
+					//fprintf(stdout, "Successfully opened destination file for writing.\n\n");
 					char line[8192];
 					while(fgets(line, sizeof(line), copy) != 0)
 					{
@@ -65,14 +65,14 @@ int cpdir(/*DIR *d,*/ char *copyPath, char *pastePath)
 				}
 				else
 				{
-					fprintf(stderr, "error: could not open destination file");
+					fprintf(stderr, "error: could not open destination file\n");
 					fclose(copy);
 				}
 			}
 			// no read permission
 			else
 			{
-				fprintf(stderr, "warning: no read permission on %s\n\n", copyPathTemp);
+				fprintf(stderr, "warning: no read permission on %s\n", copyPathTemp);
 			}
 		}
 	}
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 	// recursive copy directory
 	if (Rflag)
 	{
-		fprintf(stdout, "\nCopy directory %s to %s\n\n", argv[2], argv[3]);
+		//fprintf(stdout, "\nCopy directory %s to %s\n\n", argv[2], argv[3]);
 
 		char copyPath[512];
 		char pastePath[512];
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 				int cp = cpdir(copyPath, pastePath);
 				if(cp)
 				{
-					fprintf(stderr, "cpdir failed\n\n");
+					fprintf(stderr, "cpdir failed\n");
 					return 1;
 				}
 				return 0;
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 				int cp2 = cpdir(copyPath, pastePath);
 				if(cp2)
 				{
-					fprintf(stderr, "cpdir failed\n\n");
+					fprintf(stderr, "cpdir failed\n");
 					return 1;
 				}
 				return 0;
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 			// if not proper permissions
 			if(EACCES)
 			{
-				fprintf(stderr, "Do not have proper permissions on source directory.\n\n");
+				fprintf(stderr, "Do not have proper permissions on source directory.\n");
 				return 1;
 			}
 		}
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 		// error if can't open source dir
 		else
 		{
-			fprintf(stderr, "Could not open source directory.\n\n");
+			fprintf(stderr, "Could not open source directory.\n");
 			return 1;
 		}
 	}
@@ -179,25 +179,25 @@ int main(int argc, char **argv)
 	// copy file
 	else
 	{
-		fprintf(stdout, "\nCopy flag %s to %s\n\n", argv[1], argv[2]);
+		//fprintf(stdout, "\nCopy flag %s to %s\n\n", argv[1], argv[2]);
 
 		// check if source file exists
 		if ( access(argv[1], F_OK) == -1 )
 		{
-			fprintf(stderr, "Source file does not exist.\n\n");
+			fprintf(stderr, "Source file does not exist.\n");
 			return 1;
 		}
 
 		// open copy file, check for read permission
 		if (copy = fopen(argv[1], "r"))
 		{
-			fprintf(stdout, "Successfully opened source file for reading.\n\n");
+			//fprintf(stdout, "Successfully opened source file for reading.\n\n");
 
 			// open paste file, check for write permission
 			if(paste = fopen(argv[2], "w+"))
 			{
 				// copy file over
-				fprintf(stdout, "Successfully opened destination file for writing.\n\n");
+				//fprintf(stdout, "Successfully opened destination file for writing.\n\n");
 				char line[8192];
 				while(fgets(line, sizeof(line), copy) != 0)
 				{
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 			// if cannot open paste file with write permissions
 			else
 			{
-				fprintf(stderr, "Cannot open destination file for reading.\n\n");
+				fprintf(stderr, "Cannot open destination file for reading.\n");
 				fclose(copy);
 				return 0;
 			}
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
 		// no read permission
 		else
 		{
-			fprintf(stderr, "No read permission on source file.\n\n");
+			fprintf(stderr, "No read permission on source file.\n");
 			return 1;
 		}
 	}
