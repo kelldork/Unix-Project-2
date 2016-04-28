@@ -61,7 +61,7 @@ int cpdir(DIR *d, char *copyPath, char *pastePath)
 				fprintf(stderr, "error2\n\n");
 				return 1;
 			}
-			char line[8192];
+			char line[1024];
 
 			while(1)
 			{
@@ -73,10 +73,12 @@ int cpdir(DIR *d, char *copyPath, char *pastePath)
 				if(result <= 0);
 				{
 					fprintf(stderr, "error3\n\n");
+					return 1;
 				}
 				if(write(fout, &line[0], result) != result)
 				{
 					fprintf(stderr, "error4\n\n");
+					return 1;
 				}
 			}
 
@@ -260,7 +262,7 @@ int main(int argc, char **argv)
 			{
 				// copy file over
 				fprintf(stdout, "Successfully opened destination file for writing.\n\n");
-				char line[1100];
+				char line[8192];
 				while(fgets(line, sizeof(line), copy) != 0)
 				{
 					fputs(line, paste);
