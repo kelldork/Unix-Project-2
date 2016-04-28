@@ -64,20 +64,6 @@ int main(int argc, char ** argv) {
         else if(!strcmp(args[0], "mycd")) { 
           if(args[1]) {
             if(chdir(args[1]) != 0) printf("-bash: mycd: %s: No such file or directory\n", args[1]);
-              else chdir(args[1]);   
-          }
-          else if(strchr("/", *args[1])) {
-            printf("here");
-=======
-          if(args[1]) 
-		  {
-			    if(chdir(args[1]) != 0)
-				{
-					printf("-bash: mycd: %s: No such file or directory\n", args[1]);
-				}
-				{
-					chdir(args[1]);
-				}
           }
           else chdir(getenv("HOME"));
         }
